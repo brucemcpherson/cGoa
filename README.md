@@ -3,4 +3,6 @@ This repo (cGoa) was automatically created on 02 November 2015 13:49:24 GMT by G
 for more information see the [desktop liberation site](http://ramblings.mcpher.com/Home/excelquirks/drivesdk/gettinggithubready "desktop liberation")
 you can see [library and dependency information here](dependencies.md)
 
-Now update manually with details of this project - this skeleton file is committed only when there is no README.md in the repo.
+This library is a 'pattern light' method of using OAuth2 in Apps Script. It can handle many services such as Google, Microsoft, Github. reddit and more, and can also handle JWT and Google Service accounts. 
+
+More details are at http://ramblings.mcpher.com/Home/excelquirks/goa
