@@ -1,6 +1,11 @@
 /**
- * an oauth2 servicing class
- */
+* create a goa class
+* @constructor
+* @param {string} packageName the package name
+* @param {PropertyStore} propertyStore the property store
+* @param {number} [optTimeout] in seconds
+* @param {string} [impersonate] email address to impersonate for service accounts
+*/
 var Goa = function (packageName, propertyStore, optTimeout , impersonate) {
   'use strict';
 
@@ -19,6 +24,7 @@ var Goa = function (packageName, propertyStore, optTimeout , impersonate) {
       name_,
       onToken_,
       onTokenResult_;
+     
 
 
   /**
@@ -233,6 +239,21 @@ var Goa = function (packageName, propertyStore, optTimeout , impersonate) {
     package_.revised = new Date().getTime();
     GoaApp.setPackage ( propertyStore_ , package_);
     return self;
+  };
+  
+  /**
+   * kill the package
+   */
+  self.kill = function () {
+    GoaApp.kill(package_);
+    return self.writePackage();
+  };
+  
+  /**
+   * remove the package
+   */
+  self.remove = function () {
+    return GoaApp.removePackage ( propertyStore_, package_.packageName  );
   };
   
   
