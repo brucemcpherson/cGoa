@@ -17,7 +17,7 @@ var GoaApp = (function (goaApp) {
   * @param {string} packageName the package name
   * @param {PropertyStore} propertyStore the property store
   * @param {number} [optTimeout] in seconds
-  * @param {impersonate} [impersonate] email address to impersonate for service accounts
+  * @param {string} [impersonate] email address to impersonate for service accounts
   */
   goaApp.createGoa = function (packageName, propertyStore, optTimeout , impersonate) {
     if (!packageName) throw 'package name must be provided';
@@ -26,6 +26,7 @@ var GoaApp = (function (goaApp) {
     if (impersonate && !cUseful.isEmail (impersonate)) throw 'impersonate should be an email address, not  ' + impersonate;
     return new Goa (packageName, propertyStore, optTimeout , impersonate);
   };
+  
   /**
    * start the oauth flow
    * @param {object} package the package 
@@ -103,6 +104,16 @@ var GoaApp = (function (goaApp) {
     return p ? JSON.parse(p) : null;
   };
   
+  /**
+   * remove params from cache
+   * @param {object} propertyStore where to find it
+   * @param {string} packageName the package name
+   */
+  goaApp.removePackage = function (propertyStore, packageName) {
+    var p = cUseful.rateLimitExpBackoff( function () { 
+      return propertyStore.deleteProperty(goaApp.getPropertyKey(packageName));
+    });
+  };
   /**
    * set the authentication package
    * @param {object} propertyStore where to find it
@@ -471,7 +482,32 @@ var GoaApp = (function (goaApp) {
     });
 
   };
-  
+  /**
+  * sets the user property store to a clean package copied from the script store if it doesnt exist
+  * @param  {string} packageName the package name
+  * @param {PropertyStore} scriptPropertyStore where the credentials are
+  * @param {PropertyStore} userPropertyStore where to put them
+  * @param {boolean} replace them even if the exist
+  * @return {object} the package
+  */
+  goaApp.userClone = function(packageName, scriptPropertyStore , userPropertyStore, replace) {
+    
+    // get the userpacakage if there is one
+    var userPackage = goaApp.getPackage(userPropertyStore, packageName);
+    
+    // replace it with the script version
+    if (!userPackage || replace) {
+      var scriptPackage = goaApp.getPackage(scriptPropertyStore, packageName);
+      if (!scriptPackage) throw packageName + ' cannot be copied from script store as it is not there';
+      
+      // kill token information
+      goaApp.killPackage (scriptPackage);
+      
+      // write tot user store
+      goaApp.setPackage (userPropertyStore , scriptPackage);
+      
+    }
+  };
   /**
    * the standard consent screen
    * these parameters can be used to consreuct a consent screen
