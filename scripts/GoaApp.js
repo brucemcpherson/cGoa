@@ -268,6 +268,8 @@ var GoaApp = (function (goaApp) {
 
     // if this token is allowed for offline use
     // eg reddit uses duration:permamnent to get a refresh token
+    bundle.access_type = "online";
+    
     if(scriptPackage.offline) { 
       if (!servicePackage.duration) {
         bundle.access_type= "offline";
@@ -516,12 +518,20 @@ var GoaApp = (function (goaApp) {
    * @param {string} redirect Url the redirect URL
    * @param {string} packageName the pckage name
    * @param {string} serviceName the service name
+   * @param {boolean} offline whether offline access is allowed
    * @return {string} the html code for a consent screen
    */
-  goaApp.defaultConsentScreen = function  (consentUrl,redirectUrl,packageName,serviceName) {
+  goaApp.defaultConsentScreen = function  (consentUrl,redirectUrl,packageName,serviceName,offline) {
     
     return '<link rel="stylesheet" href="https://ssl.gstatic.com/docs/script/css/add-ons1.css">' + 
       '<style>aside {font-size:.8em;} .strip {margin:10px;} .gap {margin-top:20px;} </style>' +
+      '<script>' +
+        'function handleCon(con) { ' +
+          'var o=document.getElementById("conAnchor");' +
+          'var newUrl=o.href.toString().replace(/access_type=\\w+/, "access_type=" + (con.checked ? "off" :"on") + "line");' +
+          'o.setAttribute ("href", newUrl);' +
+        '}' +
+      '</script>' +
       '<div class="strip">' +
 
         '<h3>Goa has detected that authentication is required for a ' + serviceName + ' service</h3>' + 
@@ -529,19 +539,24 @@ var GoaApp = (function (goaApp) {
         '<div class="block"></div>' +
         '<div><label for="redirect">Redirect URI (for the developers console)</label></div>' + 
         '<div><input class="redirect" type="text" id="redirect" value="' + redirectUrl + '" disabled size=' + redirectUrl.length + '></div>' +
-        
+
+        '<div class="gap">' +
+          '<div><label><input type="checkbox" onclick="handleCon(this);"' + 
+            (offline ? ' checked' : '') + '>Allow ' + packageName + ' to always access this resource in the future ?</label></div>' + 
+        '</div>' +
+          
         '<div class="gap">' +
           '<div><label for="start">Please provide your consent to start authentication for ' + packageName + '</label></div>' + 
         '</div>' +
           
         '<div class="gap">' +
-          '<a href = "' + consentUrl + '" target="_parent"><button id="start" class="action">Start</button></a>' +
+          '<a href = "' + consentUrl + '" target="_parent" id="conAnchor"><button id="start" class="action">Start</button></a>' +
         '</div>' +
           
         '<div class="gap">' +
             '<aside>For more information on Goa see <a href="http://ramblings.mcpher.com/Home/excelquirks/oauthtoo">Desktop Liberation</aside>'+ 
         '</div>' + 
-       '</div>'; 
+       '</div>'
   };
   
   /**
