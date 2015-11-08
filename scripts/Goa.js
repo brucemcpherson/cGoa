@@ -89,19 +89,20 @@ var Goa = function (packageName, propertyStore, optTimeout , impersonate) {
     // need to store these for later
       id_ = cUseful.generateUniqueString();
       GoaApp.cachePut ( id_ , package_.packageName , params_, onToken_);
+      var offline = cUseful.applyDefault(package_.offline, true);
       
       needsConsent_ = consentScreen_ || GoaApp.defaultConsentScreen ( GoaApp.createAuthenticationUri ( 
         package_, {
           callback : callback_,
           timeout: timeout_,
-          offline:true,
+          offline:offline,
           force: true
         }, {
           goaid:id_,
           goaphase:'fetch',
           goaname:package_.packageName
-        }) ,GoaApp.createRedirectUri(), package_.packageName, package_.service);
-      
+        }) ,GoaApp.createRedirectUri(), package_.packageName, package_.service, offline);
+
       return self;
     }
     
