@@ -114,6 +114,42 @@ var GoaApp = (function (goaApp) {
       return propertyStore.deleteProperty(goaApp.getPropertyKey(packageName));
     });
   };
+  
+    /**
+  * creates a package from a file for a service account
+  * @param {Drive-App} dap the drive-app
+  * @param {object} package info on how to populate the package
+  * @return {object}  the authentication package
+  */
+  goaApp.createPackageFromFile = function (dap , package) {
+  
+    // first check that the service is known and it's for a service account
+    if (goaApp.isServiceAccountType(package)){ 
+      throw 'service type for ' + package.service + ' should be a web account';
+    }
+    
+    // now get the json key data
+    var file = dap.getFileById(package.fileId);
+    if (!file) throw 'couldnt open file:' + package.fileId;
+    
+    // the file content
+    var content = cUseful.rateLimitExpBackoff(function () { 
+      return JSON.parse (file.getBlob().getDataAsString() );
+    });
+    
+    
+    // check its good
+    if (!content.web || !content.web.client_id || !content.web.client_secret) {
+      throw 'this is not a credentials file downloaded from the developers console'
+    }
+    
+    // merge with existing package
+    return Object.keys(package).reduce (function (p,c) {
+      p[c] = package[c];
+      return p;
+    }, content.web);
+  };
+  
   /**
    * set the authentication package
    * @param {object} propertyStore where to find it
@@ -139,17 +175,17 @@ var GoaApp = (function (goaApp) {
   
   /**
   * creates a package from a file for a service account
-  * @param {DriveApp} driveApp the driveapp
+  * @param {Drive-App} dap the drive-app
   * @param {object} package info on how to populate the package
   * @return {object}  the authentication package
   */
-  goaApp.createServiceAccount = function (driveApp , package) {
+  goaApp.createServiceAccount = function (dap , package) {
   
     // first check that the service is known and it's for a service account
     if (!goaApp.isServiceAccountType(package))throw 'service type for ' + package.service + ' should be serviceaccount';
     
     // now get the json key data
-    var file = DriveApp.getFileById(package.fileId);
+    var file = dap.getFileById(package.fileId);
     if (!file) throw 'couldnt open file:' + package.fileId;
     
     // merge with existing package
