@@ -143,11 +143,11 @@ var GoaApp = (function (goaApp) {
       throw 'this is not a credentials file downloaded from the developers console'
     }
     
-    // merge with existing package
-    return Object.keys(package).reduce (function (p,c) {
-      p[c] = package[c];
-      return p;
-    }, content.web);
+    var p = cUseful.clone(package);
+    p.clientId = content.web.client_id;
+    p.clientSecret = content.web.client_secret;
+    return p;
+
   };
   
   /**
