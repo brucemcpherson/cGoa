@@ -218,6 +218,16 @@ var GoaApp = (function (goaApp) {
   };
   
   /**
+   * gets an arbirary property stored in a goa packages
+   * @param {object} package the authentication package
+   * @param {string} key the property key
+   * @return {string | undefined} the accesstoken
+   */
+  goaApp.getProperty = function (package,key) {
+    return package[key];
+  };
+  
+  /**
    * checks if access token is available and valid
    * @param {object} package the authentication package
    * @return {boolean} whether a viable token is present
@@ -522,6 +532,7 @@ var GoaApp = (function (goaApp) {
   };
   /**
   * sets the user property store to a clean package copied from the script store if it doesnt exist
+  * if the current property does not match the script one, it will be replaced anyway
   * @param  {string} packageName the package name
   * @param {PropertyStore} scriptPropertyStore where the credentials are
   * @param {PropertyStore} userPropertyStore where to put them
@@ -533,19 +544,36 @@ var GoaApp = (function (goaApp) {
     // get the userpacakage if there is one
     var userPackage = goaApp.getPackage(userPropertyStore, packageName);
     
-    // replace it with the script version
-    if (!userPackage || replace) {
-      var scriptPackage = goaApp.getPackage(scriptPropertyStore, packageName);
-      if (!scriptPackage) throw packageName + ' cannot be copied from script store as it is not there';
-      
+    // get the script package
+    var scriptPackage = goaApp.getPackage(scriptPropertyStore, packageName);
+    if (!scriptPackage) throw packageName + ' cannot be copied from script store as it is not there';
+    
+    // replace it with the script version if it has changed
+    if (!userPackage || replace || !samePackages(scriptPackage,userPackage)) {
+
       // kill token information
       goaApp.killPackage (scriptPackage);
       
-      // write tot user store
+      // write to user store
       goaApp.setPackage (userPropertyStore , scriptPackage);
       
     }
+    
+    // kill token information and compare
+    function samePackages( a, b) {
+      if (!a || !b) return false;
+      
+      var ca = goaApp.killPackage(cUseful.clone(a));
+      var cb = goaApp.killPackage(cUseful.clone(b));
+      
+      // remove the timestamp from each
+      ca.revised = cb.revised = 0;
+
+      return JSON.stringify(ca) === JSON.stringify(cb);
+    }
   };
+  
+  
   /**
    * the standard consent screen
    * these parameters can be used to consreuct a consent screen
