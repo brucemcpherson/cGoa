@@ -1,5 +1,5 @@
 # Google Apps Script Project: cGoa
-This repo (cGoa) was automatically updated on 21 March 2016 14:24:11 GMT by GasGit
+This repo (cGoa) was automatically updated on 27 April 2016 16:20:54 BST by GasGit
 
 For more information see the [desktop liberation site](http://ramblings.mcpher.com/Home/excelquirks/drivesdk/gettinggithubready "desktop liberation") or [contact me on G+](https://plus.google.com/+BruceMcpherson "Bruce McPherson - GDE")
 ## Details for Apps Script project cGoa
@@ -13,6 +13,7 @@ forPublishing| server_js
 GoaApp| server_js
 Service| server_js
 Goa| server_js
+JWT| server_js
 ### Directly referenced libraries
 *library*|*identifier*|*key*|*version*|*dev mode*|*source*|
 --- | --- | --- | --- | --- | --- 
