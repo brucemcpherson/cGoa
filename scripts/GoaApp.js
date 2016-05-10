@@ -15,6 +15,7 @@ var GoaApp = (function (goaApp) {
   // a token needs at least this time left to be able to be used (max time a script can run)
   goaApp.gracePeriod = 1000 * 60 * 7;
   
+  
 
   /**
   * create a goa class
@@ -47,7 +48,7 @@ var GoaApp = (function (goaApp) {
     if (force) goaApp.killPackage (package);
     
     // if havent already got one that will do
-    if (!goaApp.hasToken(package)) {
+    if (!goaApp.hasToken(package,true)) {
 
       // if its a service account, its a simple one shot jwt
       if (goaApp.isServiceAccountType(package)) {
@@ -129,6 +130,7 @@ var GoaApp = (function (goaApp) {
    * @param {string} packageName the package name
    */
   goaApp.removePackage = function (propertyStore, packageName) {
+  
     var p = cUseful.rateLimitExpBackoff( function () { 
       return propertyStore.deleteProperty(goaApp.getPropertyKey(packageName));
     });
@@ -259,12 +261,53 @@ var GoaApp = (function (goaApp) {
   /**
    * checks if access token is available and valid
    * @param {object} package the authentication package
+   * @param {boolean} check whether to check it against google oauth2 infra
    * @return {boolean} whether a viable token is present
    */
-  goaApp.hasToken = function (package) {
-    return goaApp.hasFlow(package) && package.access.accessToken && 
-      new Date().getTime() + goaApp.gracePeriod < package.access.expires;
+  goaApp.hasToken = function (package,check) {
+
+    // first step, make sure we have a likable token
+    var ok = goaApp.hasFlow(package) && package.access.accessToken ? true : false;  
+
+    // next step.. if asked, check against google infra if its possible
+
+    if (check && ok) {
+
+      var servicePackage = goaApp.getServicePackage (package);
+
+      if (servicePackage.checkUrl) {
+
+        var checked = checkToken_(servicePackage.checkUrl + package.access.accessToken);
+        ok = checked.ok;
+
+        if(!ok) {
+          // need to get rid of this token
+          package.access.accessToken = "";
+        }
+      }
+    }
+    else {
+      ok = ok && (new Date().getTime() + goaApp.gracePeriod < package.access.expires);
+    }
+    
+    return ok;
   };
+  
+  // checks the token 
+  function checkToken_ (url) {
+    var response = UrlFetchApp.fetch(
+      url, {muteHttpExceptions:true});
+    try {
+      var result = JSON.parse(response.getContentText());
+      return {
+        ok:result.error ? false : true,
+        info:result
+      }
+    }
+    catch(err) {
+      return{ ok:false,info:{error_description:'parse error', error:err , data: response.getContentText()}};
+    }
+  }
   
   /** 
    * checks that we have an access flow package at all
@@ -395,7 +438,7 @@ var GoaApp = (function (goaApp) {
           refresh_token : refreshToken,
           grant_type : "refresh_token"
         },
-        muteHttpExceptions : false
+        muteHttpExceptions : true
       };
       
       // get the service info
