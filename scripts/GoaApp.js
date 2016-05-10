@@ -86,7 +86,9 @@ var GoaApp = (function (goaApp) {
       // maybe we can refresh one
       else if ( goaApp.hasRefreshToken(package) ) {
         var result = goaApp.tryRefresh (package);
-        if (!goaApp.hasToken(package)) throw 'failed to exchange refresh token for access token:' + result.getContentText();
+        if (!goaApp.hasToken(package)) {
+          Logger.log('failed to exchange refresh token for access token(ok if this app has been recently revoked)' + result.getContentText());
+        }
       }
     }
     
@@ -266,8 +268,13 @@ var GoaApp = (function (goaApp) {
    */
   goaApp.hasToken = function (package,check) {
 
+    //for now, lets always check.. maybe remove this later
+    check = true;
+    
     // first step, make sure we have a likable token
-    var ok = goaApp.hasFlow(package) && package.access.accessToken ? true : false;  
+    var ok = (goaApp.hasFlow(package) && 
+      package.access.accessToken && 
+      (new Date().getTime() + goaApp.gracePeriod < package.access.expires)) ? true : false;  
 
     // next step.. if asked, check against google infra if its possible
 
@@ -283,12 +290,11 @@ var GoaApp = (function (goaApp) {
         if(!ok) {
           // need to get rid of this token
           package.access.accessToken = "";
+
         }
       }
     }
-    else {
-      ok = ok && (new Date().getTime() + goaApp.gracePeriod < package.access.expires);
-    }
+
     
     return ok;
   };
