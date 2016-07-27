@@ -67,9 +67,6 @@ var Service = (function (service) {
     },
     firebase: {
       accountType:'firebase'
-    },
-    slideshare: {
-      accountType:'slideshare'
     }
   };
   
