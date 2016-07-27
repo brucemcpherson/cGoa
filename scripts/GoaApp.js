@@ -83,10 +83,6 @@ var GoaApp = (function (goaApp) {
         }
       }
       
-      // maybe its a slideshare
-      else if (goaApp.isSha1Type(package)) {
-      
-      }
       
       // maybe we can refresh one
       else if ( goaApp.hasRefreshToken(package) ) {
@@ -211,15 +207,7 @@ var GoaApp = (function (goaApp) {
     return servicePackage.accountType === 'firebase';
   };
   
- /**
-  * creates a package from a file for a service account
-  * @param {object} package the authentication package
-  * @return {boolean}  whether its a slideshare account
-  */
-  goaApp.isSha1Type = function (package) {
-    var servicePackage = goaApp.getServicePackage ( package);
-    return servicePackage.accountType === 'slideshare';
-  };
+
   
   /**
   * creates a package from a file for a service account
