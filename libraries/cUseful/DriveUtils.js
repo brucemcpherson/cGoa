@@ -22,11 +22,19 @@ var DriveUtils = (function (ns) {
       FUSIONTABLE:"application/vnd.google-apps.fusiontable",
       SPREADSHEET:"application/vnd.google-apps.spreadsheet",
       UNKNOWN:"application/vnd.google-apps.unknown",
-      VIDEO:"application/vnd.google-apps.video"
+      VIDEO:"application/vnd.google-apps.video",
+      gadget:"application/xml",
+      xml:"text/xml",
+      json:"application/json"
     }
   };
   
-  
+  ns.getShortMime = function (mimeType) {
+    var f = Object.keys(ENUMS.MIMES).filter(function(k) {
+      return ENUMS.MIMES[k] === mimeType;
+    });
+    return f.length ? f[0].toLowerCase() : mimeType.toLowerCase();
+  };
   // for handling advanced services
   ns.ads = (function (ads) {
     
@@ -93,6 +101,7 @@ var DriveUtils = (function (ns) {
         
         var result = Utils.expBackoff(function() {
           return ns.service.Children.list(parentId,options);
+
         },{ logAttempts:false});
 
         
@@ -110,6 +119,7 @@ var DriveUtils = (function (ns) {
     /**
     * return a folder id from a path like /abc/def/ghi
     * @param {string} path the path
+    * @param {boolean} [create=false] create it
     * @return {object} {id:'xxxx'} or null
     */
     ads.getFolderFromPath = function (path)  {
@@ -177,7 +187,7 @@ var DriveUtils = (function (ns) {
     
     if (ns.isDriveApp()) {
     
-      return mime ? getFilesByType (mime) : parent.getFiles();
+      return mime ? ns.service.getFilesByType (mime) : parent.getFiles();
     }
     else {
 
@@ -185,6 +195,23 @@ var DriveUtils = (function (ns) {
     }
   };
   
+  ns.getFileById = function (id) {
+   try {
+      return Utils.expBackoff ( function () {
+
+        if (!ns.isDriveApp()) {
+          return ns.service.Files.get(id,{fields:"id,title"});  
+        }
+        else {
+          return ns.service.getFileById(id);
+        }
+      },{logAttempts:false});
+    }
+    catch (err) {
+      return null;
+    }
+  
+  }
   ns.getFolderById = function (path) {
     
     try {
@@ -276,26 +303,33 @@ var DriveUtils = (function (ns) {
     function getFiles (folder,mime) {
       var files= [];
       var it = ns.getFiles (folder , mime) ;
+      folderPath = ns.getPathFromFolder (folder);
       
       if (ns.isDriveApp()) {
-
-        folderPath = ns.getPathFromFolder (folder);
-        
         while (it.hasNext()) {
           var file = it.next();
+          var fileName = file.getName();
           files.push({
             file:file,
             folder:folder,
-            path:folderPath  + file.getName()
+            path:folderPath  + fileName,
+            fileName:fileName,
+            id:file.getId()
           });
         }
       }
       else {
 
         it.forEach(function(d) {
+          
+          // need to get the file name
+          var fileName = ns.getFileById(d.id).title;
           files.push({
             file:d,
-            folder:folder
+            folder:folder,
+            path:folderPath + fileName,
+            fileName:fileName,
+            id:d.id
           });
         })
       }
