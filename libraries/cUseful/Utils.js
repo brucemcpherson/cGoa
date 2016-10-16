@@ -175,6 +175,41 @@ var Utils = (function (ns) {
     return result;
   };
   
+  /** 
+  * generateUniqueString
+  * get a unique string
+  * @param {number} optAbcLength the length of the alphabetic prefix
+  * @return {string} a unique string
+  **/
+  ns.generateUniqueString = function (optAbcLength) {
+    var abcLength = ns.isUndefined(optAbcLength) ? 3 : optAbcLength;
+    return  (new Date().getTime()).toString(36)  + arbitraryString(abcLength) ;
+  };
+  
+  /** 
+  * get an arbitrary alpha string
+  * @param {number} length of the string to generate
+  * @return {string} an alpha string
+  **/
+  ns.arbitraryString = function (length) {
+    var s = '';
+    for (var i = 0; i < length; i++) {
+      s += String.fromCharCode(ns.randBetween ( 97,122));
+    }
+    return s;
+  }
+  
+  /** 
+  * randBetween
+  * get an random number between x and y
+  * @param {number} min the lower bound
+  * @param {number} max the upper bound
+  * @return {number} the random number
+  **/
+  ns.randBetween = function (min, max) {
+    return Math.floor(Math.random() * (max - min + 1)) + min;
+  }
+  
   ns.yesish = function(s) {
     var t = s.toString().toLowerCase();
     return t === "yes" || "y" || "true" || "1";
@@ -373,5 +408,25 @@ var Utils = (function (ns) {
     return typeof value === "object" && !Array.isArray(value);
   }
   
+  /**
+   * crush for writing to cache.props
+   * @param {string} crushThis the string to crush
+   * @return {string} the b64 zipped version
+   */
+  ns.crush = function (crushThis) {
+    return Utilities.base64Encode(Utilities.zip ([Utilities.newBlob(JSON.stringify(crushThis))]).getBytes());
+  };
+
+  /**
+   * uncrush for writing to cache.props
+   * @param {string} crushed the crushed string
+   * @return {string} the uncrushed string
+   */
+  ns.uncrush = function (crushed) {
+    return Utilities.unzip(Utilities.newBlob(Utilities.base64Decode(crushed),'application/zip'))[0].getDataAsString();
+  };
+
+
+
   return ns;
 }) (Utils || {});
