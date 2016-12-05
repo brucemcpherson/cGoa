@@ -83,6 +83,23 @@ var GoaApp = (function (goaApp) {
         }
       }
       
+      // maybe its a client credentials one
+      else if (goaApp.isCredentialType (package)) {
+        var result = goaApp.credential.makeTokenRequest (package  ,timeout);
+        
+        // we got something
+        if (result && result.content) {
+          if (result.content.access_token) {
+            package.access = {
+              accessToken:result.content.access_token,
+              expires: result.content.expires_in * 1000 + new Date().getTime()
+            }
+          }
+        }
+        // something happened
+        if (!goaApp.hasToken(package)) throw 'failed to get service account token:' + JSON.stringify(result.content);
+      }
+      
       
       // maybe we can refresh one
       else if ( goaApp.hasRefreshToken(package) ) {
@@ -199,7 +216,7 @@ var GoaApp = (function (goaApp) {
   };
   
  /**
-  * creates a package from a file for a service account
+  * creates a package from a file for a jwt firebase account
   * @param {object} package the authentication package
   * @return {boolean}  whether its a jwt account
   */
@@ -208,8 +225,16 @@ var GoaApp = (function (goaApp) {
     return servicePackage.accountType === 'firebase';
   };
   
+   /**
+  * creates a package from a file for a credentials grant type
+  * @param {object} package the authentication package
+  * @return {boolean}  whether its a jwt account
+  */
+  goaApp.isCredentialType = function (package) {
+    var servicePackage = goaApp.getServicePackage ( package);
+    return servicePackage.accountType === 'credential';
+  };
 
-  
   /**
   * creates a package from a file for a service account
   * @param {Drive-App} dap the drive-app
@@ -521,19 +546,23 @@ var GoaApp = (function (goaApp) {
   function setOptions_ (package, servicePackage , options) {
 
     // some APIS want to id.secret to be encoded as basic auth
+    options = options || {};
+   
     if (servicePackage.basic) {
-      options.headers = {
-        authorization: "Basic " + Utilities.base64Encode(package.clientId + ":" + package.clientSecret)
-      }
+      options.headers = options.headers || {};
+      options.headers.authorization = "Basic " + Utilities.base64Encode(package.clientId + ":" + package.clientSecret);
+     
     }
     else {
+      options.payload = options.payload || {};
       options.payload.client_id = package.clientId;
       options.payload.client_secret = package.clientSecret;
     }
     
     // some APIS need accept headers
     if (servicePackage.accept) {
-      options.headers = {accept:servicePackage.accept};
+      options.headers = options.headers || {};
+      options.headers.accept = servicePackage.accept;
     }
     
     return options;
@@ -694,7 +723,7 @@ var GoaApp = (function (goaApp) {
           
         '<div class="block"></div>' +
         '<div><label for="redirect">Redirect URI (for the developers console)</label></div>' + 
-        '<div><input class="redirect" type="text" id="redirect" value="' + redirectUrl + '" disabled size=' + redirectUrl.length + '></div>' +
+        '<div><input class="redirect" type="text" id="redirect" value="' + redirectUrl + '" readonly size=' + redirectUrl.length + '></div>' +
 
         '<div class="gap">' +
           '<div><label><input type="checkbox" onclick="handleCon(this);"' + 
@@ -722,7 +751,84 @@ var GoaApp = (function (goaApp) {
   function getCache_ () {
     return CacheService.getUserCache();
   }
+  
+  /**
+  
+   //if we are sending request to obtain bearer token
+        if ($auth){
+            $headers = array("Accept: application/json", "Accept-Language: en_US");
+            curl_setopt($ch, CURLOPT_HTTPAUTH, CURLAUTH_BASIC);
+            curl_setopt($ch, CURLOPT_USERPWD, CLIENT_ID . ":" .CLIENT_SECRET);
+            curl_setopt($ch, CURLOPT_SSLVERSION, 3);
+            curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+            curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 2);
+        //if we are sending request with the bearer token for protected resources
+        } else {
+            $headers = array("Content-Type:application/json", "Authorization:{$this->token_type} {$this->access_token}");
+        }
+           
+        $options = array(
+            CURLOPT_HEADER => true,
+            CURLINFO_HEADER_OUT => true,
+            CURLOPT_HTTPHEADER => $headers,
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_VERBOSE => true,
+            CURLOPT_TIMEOUT => 10
+        );
+            
+            
+        if ($method == 'POST'){
+            $options[CURLOPT_POSTFIELDS] = $postvals;
+            $options[CURLOPT_CUSTOMREQUEST] = $method;
+        }
+        
+        curl_setopt_array($ch, $options);
+           
+        $response = curl_exec($ch);
+        $header = substr($response, 0, curl_getinfo($ch,CURLINFO_HEADER_SIZE));
+        $body = json_decode(substr($response, curl_getinfo($ch,CURLINFO_HEADER_SIZE)));
+        curl_close($ch);
+            
+        return array('header' => $header, 'body' => $body);
+    }
+     */         
+              
+  /**
+   * @namespace GoaApp.credential
+   * for handling credential claims
+   */
+  goaApp.credential = {
+    
+     makeTokenRequest: function (package,timeout) {
+  
+       var tokenPacket = {};
+       var servicePackage = goaApp.getServicePackage ( package);
+  
+       // i can use the service account option maker for some of this
+       var options = setOptions_ (package, servicePackage, {
+         method:"POST",
+         muteHttpExceptions:true,
+         contentType:'application/x-www-form-urlencoded',
+         payload: {
+           grant_type:"client_credentials"
+         },
+         headers: {
+           "Accept-Language":"en_US"
+         }
+       });
+  
 
+       // request a new one
+       var result = cUseful.rateLimitExpBackoff(function () {
+        return UrlFetchApp.fetch(servicePackage.tokenUrl, options);
+      });
+      
+      tokenPacket.content = JSON.parse(result.getContentText());
+      tokenPacket.status = result.getResponseCode();
+      return tokenPacket;
+     }
+  };
+  
   /**
    * @namespace GoaApp.jwt
    * for handling jwt claims
