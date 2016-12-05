@@ -751,47 +751,7 @@ var GoaApp = (function (goaApp) {
   function getCache_ () {
     return CacheService.getUserCache();
   }
-  
-  /**
-  
-   //if we are sending request to obtain bearer token
-        if ($auth){
-            $headers = array("Accept: application/json", "Accept-Language: en_US");
-            curl_setopt($ch, CURLOPT_HTTPAUTH, CURLAUTH_BASIC);
-            curl_setopt($ch, CURLOPT_USERPWD, CLIENT_ID . ":" .CLIENT_SECRET);
-            curl_setopt($ch, CURLOPT_SSLVERSION, 3);
-            curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
-            curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 2);
-        //if we are sending request with the bearer token for protected resources
-        } else {
-            $headers = array("Content-Type:application/json", "Authorization:{$this->token_type} {$this->access_token}");
-        }
-           
-        $options = array(
-            CURLOPT_HEADER => true,
-            CURLINFO_HEADER_OUT => true,
-            CURLOPT_HTTPHEADER => $headers,
-            CURLOPT_RETURNTRANSFER => true,
-            CURLOPT_VERBOSE => true,
-            CURLOPT_TIMEOUT => 10
-        );
-            
-            
-        if ($method == 'POST'){
-            $options[CURLOPT_POSTFIELDS] = $postvals;
-            $options[CURLOPT_CUSTOMREQUEST] = $method;
-        }
-        
-        curl_setopt_array($ch, $options);
-           
-        $response = curl_exec($ch);
-        $header = substr($response, 0, curl_getinfo($ch,CURLINFO_HEADER_SIZE));
-        $body = json_decode(substr($response, curl_getinfo($ch,CURLINFO_HEADER_SIZE)));
-        curl_close($ch);
-            
-        return array('header' => $header, 'body' => $body);
-    }
-     */         
+         
               
   /**
    * @namespace GoaApp.credential
