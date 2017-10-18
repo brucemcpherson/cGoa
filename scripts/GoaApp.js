@@ -199,6 +199,12 @@ var GoaApp = (function (goaApp) {
    */
   goaApp.setPackage = function (propertyStore, package) {
    
+    // check a few things - this fail if unknown type
+    var sp = goaApp.getServicePackage (package);
+    
+    // check we have a name
+    if (!package.packageName) throw 'package must have a name';
+    
     cUseful.rateLimitExpBackoff( function () { 
       return propertyStore.setProperty(goaApp.getPropertyKey(package.packageName) , JSON.stringify (package)); 
     });
@@ -378,6 +384,14 @@ var GoaApp = (function (goaApp) {
    */
   goaApp.getServicePackage = function (package) {
     var p = Service.package[package.service];
+    
+    // support custom service
+    if (!p && package.service === "custom") {
+     if (typeof package.serviceParameters !== typeof {}) {
+        throw 'custom service needs a serviceParameters object as a property';
+     }
+     p = package.serviceParameters;
+    }
     if (!p) throw 'service provider ' + package.service + ' is not known';
     return p;
   };
