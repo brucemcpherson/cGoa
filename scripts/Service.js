@@ -81,6 +81,12 @@ var Service = (function (service) {
       accountType:"credential",
       accept: "application/json"
     },
+    classy: {
+      authUrl : "https://api.classy.org/oauth2/auth",
+      tokenUrl: "https://api.classy.org/oauth2/auth",
+      refreshUrl: "https://api.classy.org/oauth2/auth",
+      accountType:"credential"
+    },
     firebase: {
       accountType:'firebase'
     }
