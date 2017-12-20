@@ -87,6 +87,11 @@ var Service = (function (service) {
       refreshUrl: "https://api.classy.org/oauth2/auth",
       accountType:"credential"
     },
+    quickbooks: {
+      authUrl : "https://appcenter.intuit.com/connect/oauth2",
+      tokenUrl: "https://oauth.platform.intuit.com/oauth2/v1/tokens/bearer",
+      refreshUrl: "https://oauth.platform.intuit.com/oauth2/v1/tokens/bearer"
+    },
     firebase: {
       accountType:'firebase'
     }
