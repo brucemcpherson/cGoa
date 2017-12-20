@@ -221,7 +221,7 @@ var Goa = function (packageName, propertyStore, optTimeout , impersonate) {
       
     
     if (options.height)html.setHeight(options.height);
-    if (options.width)html.setHeight(options.width);
+    if (options.width)html.setWidth(options.width);
     
     // where to do it
     if (options.type === "SIDEBAR") {
