@@ -449,7 +449,7 @@ var Utils = (function (ns) {
   };
   /**
   * simple test for an object type
-  * @param {*} the thing to test
+  * @param {*} value the thing to test
   * @return {bool} whether it was an object
   */
   ns.isVanObject = function(value) {
@@ -472,6 +472,38 @@ var Utils = (function (ns) {
   */
   ns.uncrush = function (crushed) {
     return Utilities.unzip(Utilities.newBlob(Utilities.base64Decode(crushed),'application/zip'))[0].getDataAsString();
+  };
+  
+  /**
+   * find the index of an item in an array
+   * @param {[*]} arr the array
+   * @param {function} func the compare func ( received item, index, arr)
+   * @return {number} the index
+   */
+  ns.findIndex = function ( arr ,func) {
+    var k = 0;
+    
+    if (!Array.isArray (arr)) throw 'findIndex arg should be an array';
+    if (typeof func !== "function") throw 'findindex predictate should be a function';
+    while (k < arr.length) {
+      if (func (arr[k] , k , arr)) {
+        return k;
+      }
+      k++;
+    }
+    return -1;
+  };
+  
+  /**
+   * find the item in an array
+   * @param {[*]} arr the array
+   * @param {function} func the compare func ( received item, index, arr)
+   * @return {number} the index
+   */
+  ns.find = function ( arr ,func) {
+    
+    var k = ns.findIndex (arr , func );
+    return k === -1 ? undefined : arr[k];
   };
   
   /**
@@ -668,9 +700,18 @@ var Utils = (function (ns) {
   };
 
   ns.byte2hex = function(data) {
-    var conv;
+
+    /*
+    syntax not liked by v8
     conv = [(i < 0 ? i + 256 : i).toString(16) for each (i in data)];
     return [i.length == 1 ? "0" + i : i for each (i in conv)];
+    */
+    var conv = data.map(function(f) { 
+      return (f < 0 ? f + 256 : f).toString(16)
+    })
+    return conv.map(function(f){
+       return f.length == 1 ? "0" + f : f
+    })
   };
 
   ns.byte2num = function(data, byteorder) {
