@@ -1,7 +1,13 @@
 # Google Apps Script Project: cGoa
-This repo (cGoa) was automatically updated on 09/07/2020, 17:38:48 by GasGit
+This repo (cGoa) was automatically updated on 10/13/2021, 5:10:40 PM by GasGit
 
-For more information see the [desktop liberation site](https://ramblings.mcpher.com/drive-sdk-and-github/getting-your-apps-scripts-to-github/ "desktop liberation") or [contact me on Gitter](https://gitter.im/desktopliberation/community "Bruce McPherson - GDE")
+For more information on gasgit, see the [desktop liberation site](https://ramblings.mcpher.com/drive-sdk-and-github/migrategasgit/ "desktop liberation")
+
+For more info on cGoa try https://ramblings.mcpher.com/?s=cGoa or use the issues section of this repo to contact me
+## Library reference
+1v_l4xN3ICa0lAW315NQEzAHPSoNiFdWHsMEwj2qA5t9cgZ5VWci2Qxv2
+
+
 ## Details for Apps Script project cGoa
 Where possible directly referenced or sub referenced library sources have been copied to this repository, or you can include the library references shown. 
 The shared link for [cGoa is here](https://script.google.com/d/1v_l4xN3ICa0lAW315NQEzAHPSoNiFdWHsMEwj2qA5t9cgZ5VWci2Qxv2/edit?usp=sharing "open in the GAS IDE")
