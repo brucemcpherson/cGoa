@@ -11,6 +11,5 @@
     "access": "MYSELF",
     "executeAs": "USER_DEPLOYING"
   },
-  "exceptionLogging": "STACKDRIVER",
-  "runtimeVersion": "V8"
+  "exceptionLogging": "STACKDRIVER"
 }
