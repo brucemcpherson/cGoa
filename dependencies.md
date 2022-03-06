@@ -1,5 +1,5 @@
 # Google Apps Script Project: cGoa
-This repo (cGoa) was automatically updated on 10/22/2021, 10:31:34 AM by GasGit
+This repo (cGoa) was automatically updated on 3/6/2022, 4:52:07 PM by GasGit
 
 For more information on gasgit, see the [desktop liberation site](https://ramblings.mcpher.com/drive-sdk-and-github/migrategasgit/ "desktop liberation")
 
@@ -24,11 +24,11 @@ JWT| server_js
 ### Directly referenced libraries
 *library*|*identifier*|*key*|*version*|*dev mode*|*source*|
 --- | --- | --- | --- | --- | --- 
-cUseful| cUseful|1EbLSESpiGkI3PYmJqWh3-rmLkYKAtCNPi1L2YCtMgo2Ut8xMThfJ41Ex|121|no|[here](libraries/cUseful "library source")
+cUseful| cUseful|1EbLSESpiGkI3PYmJqWh3-rmLkYKAtCNPi1L2YCtMgo2Ut8xMThfJ41Ex|130|no|[here](libraries/cUseful "library source")
 ### All dependencies and sub dependencies
 *library*|*identifier*|*key*|*version*|*dev mode*|*source*|
 --- | --- | --- | --- | --- | --- 
-cUseful| cUseful|1EbLSESpiGkI3PYmJqWh3-rmLkYKAtCNPi1L2YCtMgo2Ut8xMThfJ41Ex|121|no|[here](libraries/cUseful "library source")
+cUseful| cUseful|1EbLSESpiGkI3PYmJqWh3-rmLkYKAtCNPi1L2YCtMgo2Ut8xMThfJ41Ex|130|no|[here](libraries/cUseful "library source")
 ### Enabled Google Services
 no libraries discovered
 ### Scopes required
