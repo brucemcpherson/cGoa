@@ -1,5 +1,5 @@
 # Google Apps Script Project: cGoa
-This repo (cGoa) was automatically updated on 3/14/2022, 2:04:35 PM by GasGit
+This repo (cGoa) was automatically updated on 6/28/2022, 1:41:17 PM by GasGit
 
 For more information on gasgit, see the [desktop liberation site](https://ramblings.mcpher.com/drive-sdk-and-github/migrategasgit/ "desktop liberation")
 
@@ -16,19 +16,15 @@ The shared link for [cGoa is here](https://script.google.com/d/1v_l4xN3ICa0lAW31
 *name*|*type*
 --- | --- 
 appsscript| json
-forPublishing| server_js
 GoaApp| server_js
 Service| server_js
 Goa| server_js
 JWT| server_js
+Utils| server_js
 ### Directly referenced libraries
-*library*|*identifier*|*key*|*version*|*dev mode*|*source*|
---- | --- | --- | --- | --- | --- 
-cUseful| cUseful|1EbLSESpiGkI3PYmJqWh3-rmLkYKAtCNPi1L2YCtMgo2Ut8xMThfJ41Ex|131|no|[here](libraries/cUseful "library source")
+no libraries discovered
 ### All dependencies and sub dependencies
-*library*|*identifier*|*key*|*version*|*dev mode*|*source*|
---- | --- | --- | --- | --- | --- 
-cUseful| cUseful|1EbLSESpiGkI3PYmJqWh3-rmLkYKAtCNPi1L2YCtMgo2Ut8xMThfJ41Ex|131|no|[here](libraries/cUseful "library source")
+no libraries discovered
 ### Enabled Google Services
 no libraries discovered
 ### Scopes required
